@@ -1,0 +1,10 @@
+<html>
+<body>
+{% for i in range(len(results)) %}
+    <td>
+        <img src="/static/{{ results[i] }}" height="50px" width="50px">
+        <figcaption>{{ i }}</figcaption>
+    </td>
+{% endfor %}
+</body>
+</html>
