@@ -1,5 +1,4 @@
 class MemeTemplate:
-
     DefaultCoordinate = 10
 
     """
@@ -33,6 +32,3 @@ class MemeTemplate:
 
     def setUrl(self, url):
         self.url = url
-
-
-

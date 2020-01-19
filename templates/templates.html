@@ -1,10 +1,12 @@
 <html>
 <body>
-{% for i in range(len(results)) %}
-    <td>
-        <img src="/static/{{ results[i] }}" height="50px" width="50px">
-        <figcaption>{{ i }}</figcaption>
-    </td>
+{% for meme in data['memes'] %}
+    <tr>
+        <td>
+            <img src="/static/{{ meme.url }}" height="50px" width="50px">
+            <figcaption>{{ meme.id }}</figcaption>
+        </td>
+    </tr>
 {% endfor %}
 </body>
 </html>

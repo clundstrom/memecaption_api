@@ -65,18 +65,15 @@ def hello_world():
 @app.route('/uploader', methods=['GET', 'POST'])
 def uploader():
     if request.method == 'POST':
-
         # template = MemeTemplate(request.form.get('name'), )
-
 
         f = request.files['file']
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
 
-
         # todo: createTemplate and add to db
 
-
-        return redirect(f"http://localhost:5000/homebrew?id={request.form.get('id')}&upper={request.form.get('upper')}&lower={request.form.get('lower')}")
+        return redirect(
+            f"http://localhost:5000/homebrew?id={request.form.get('id')}&upper={request.form.get('upper')}&lower={request.form.get('lower')}")
 
 
 @app.route('/templates', methods=['GET'])
@@ -85,7 +82,8 @@ def templates():
     for (dirpath, dirnames, filenames) in os.walk('static'):
         f.extend(filenames)
 
-    return render_template('templates.html', results=f)
+    return render_template('templates.html', results=MemeService.Data)
+
 
 @app.route('/upload', methods=['GET'])
 def upload_file():
@@ -100,13 +98,22 @@ def generateMeme():
     try:
         # Create Request
         memereq = MemeRequest(request.args.get('id'), request.args.get('upper'))
+        x1_offset = 0
+        y1_offset = 0
 
-        upper = TextBox(request.args.get('upper'), 0, 0)
-        memereq.addBox(upper)
+        #  Check passed arguments
+        if request.args.get('x') is not None:
+            x1_offset = int(request.args.get('x'))
+
+        if request.args.get('y') is not None:
+            y1_offset = int(request.args.get('y'))
 
         if request.args.get('lower') is not None:
             lower = TextBox(request.args.get('lower'), 0, 0)
             memereq.addBox(lower)
+
+        upper = TextBox(request.args.get('upper'), x1_offset, y1_offset)
+        memereq.addBox(upper)
 
         # Process meme if valid
         if memereq.isValidRequest():
