@@ -1,12 +1,12 @@
 <html>
 <body>
-{% for meme in data['memes'] %}
-    <tr>
+<tr>
+    {% for meme in results['memes'] %}
         <td>
-            <img src="/static/{{ meme.url }}" height="50px" width="50px">
-            <figcaption>{{ meme.id }}</figcaption>
+            <img src="/static/{{ meme.url }}" height="100px" width="100px">
+            <figcaption>ID: {{ meme.id }}</figcaption>
         </td>
-    </tr>
-{% endfor %}
+    {% endfor %}
+</tr>
 </body>
 </html>

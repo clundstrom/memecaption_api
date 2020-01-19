@@ -81,8 +81,7 @@ def templates():
     f = []
     for (dirpath, dirnames, filenames) in os.walk('static'):
         f.extend(filenames)
-
-    return render_template('templates.html', results=MemeService.Data)
+    return render_template('templates.html', results=MemeService().Data)
 
 
 @app.route('/upload', methods=['GET'])
@@ -108,12 +107,13 @@ def generateMeme():
         if request.args.get('y') is not None:
             y1_offset = int(request.args.get('y'))
 
+        if request.args.get('upper') is not None:
+            upper = TextBox(request.args.get('upper'), x1_offset, y1_offset)
+            memereq.addBox(upper)
+
         if request.args.get('lower') is not None:
             lower = TextBox(request.args.get('lower'), 0, 0)
             memereq.addBox(lower)
-
-        upper = TextBox(request.args.get('upper'), x1_offset, y1_offset)
-        memereq.addBox(upper)
 
         # Process meme if valid
         if memereq.isValidRequest():

@@ -30,7 +30,7 @@ class MemeService:
             print(box)
 
         try:
-            url = MemeGenerator().generate(f'templates/{memereq.id}.jpg', memereq.boxes)
+            url = MemeGenerator().generate(f'static/{memereq.id}.jpg', memereq.boxes)
         except InterruptedError:
             return 'Your text was too long. Max length=69 characters'
 

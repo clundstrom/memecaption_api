@@ -7,6 +7,22 @@
       "x": 0,
       "y": 0,
       "name": "Martin"
+    },
+    {
+      "id": "2",
+      "url": "2.jpg",
+      "fontsize": "46",
+      "x": 0,
+      "y": 0,
+      "name": "Bigbrain"
+    },
+    {
+      "id": "3",
+      "url": "3.jpg",
+      "fontsize": "46",
+      "x": 0,
+      "y": 0,
+      "name": "One does not simply"
     }
   ],
   "dogfacts": [
