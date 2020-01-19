@@ -2,15 +2,12 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-
 from flask import Flask, request, jsonify, abort, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 from random import randint
-
 from werkzeug.utils import secure_filename
 
 from models.MemeRequest import MemeRequest
-from models.MemeTemplate import MemeTemplate
 from services.MemeService import MemeService
 from models.TextBox import TextBox
 

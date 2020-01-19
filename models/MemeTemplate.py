@@ -13,12 +13,13 @@ class MemeTemplate:
 
     """
 
-    def __init__(self, name: '', url: '', fontsize=46):
+    def __init__(self, name: '', url: '', id, fontsize=46):
         self.name = name
         self.url = url
         self.x = self.DefaultCoordinate
         self.y = self.DefaultCoordinate
         self.fontsize = fontsize
+        self.id = id
 
     def getUrl(self):
         return self.url
