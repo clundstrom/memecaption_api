@@ -1,5 +1,8 @@
+import json
+
+
 class MemeTemplate:
-    DefaultCoordinate = 10
+    DefaultCoordinate = 0
 
     """
     Class which describes a meme template for the MEME API.

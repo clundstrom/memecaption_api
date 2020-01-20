@@ -50,7 +50,7 @@ class MemeService:
     def load(self):
         with open(self.StoredMemesUrl) as json_file:
             self.Data = json.load(json_file)
-            print(self.Data)
+            return self.Data
 
     def validate(self, memerequest: MemeRequest):
         for template in self.Data['memes']:
