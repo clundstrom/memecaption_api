@@ -57,8 +57,8 @@ class MemeService:
             return self.Memes
 
     def validate(self, memerequest: MemeRequest):
-        for template in self.Memes['memes']:
-            if template['id'] == str(memerequest.id):
+        for template in self.Memes:
+            if template.id == int(memerequest.id):
                 return True
         return False
 

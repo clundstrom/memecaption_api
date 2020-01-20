@@ -13,7 +13,7 @@ class MemeGenerator:
     MaxLines = 3
     MinFontSize = 26
     WidthFactor = 0.9
-    HeightFactor = 0.8
+    HeightFactor = 0.9
 
     def generate(self, url: str, boxes: List[TextBox], fontsize: int = 46):
 

@@ -3,7 +3,6 @@
 import json
 import os
 
-import jsonpickle
 from flask import Flask, request, jsonify, abort, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 from random import randint
