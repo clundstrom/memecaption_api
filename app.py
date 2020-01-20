@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import json
 import os
+
+import jsonpickle
 from flask import Flask, request, jsonify, abort, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 from random import randint
@@ -26,6 +28,9 @@ dogfact = ['Did you know a dog\'s nose print is unique, much like person\'s fing
 
 with open('credentials.json') as json_file:
     creds = json.load(json_file)
+
+
+MEME_CACHE = []
 
 app = Flask(__name__)
 
@@ -75,10 +80,11 @@ def uploader():
 
 @app.route('/templates', methods=['GET'])
 def templates():
-    f = []
-    for (dirpath, dirnames, filenames) in os.walk('static'):
-        f.extend(filenames)
-    return render_template('templates.html', results=MemeService().Data)
+    if len(MEME_CACHE) == 0:
+        MEME_CACHE.append(MemeService().getMemes())
+        return render_template('templates.html', results=MEME_CACHE[0])
+    else:
+        return render_template('templates.html', results=MEME_CACHE[0])
 
 
 @app.route('/upload', methods=['GET'])

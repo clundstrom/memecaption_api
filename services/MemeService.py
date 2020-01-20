@@ -1,5 +1,6 @@
 import json
 
+import jsonpickle
 from flask import send_file
 
 from models.MemeRequest import MemeRequest
@@ -17,7 +18,8 @@ class MemeService:
     # List of stored templates
     StoredMemesUrl = 'templates/db.json'
     # Loaded memes
-    Data = {'memes': []}
+    Data = {}
+    Memes = []
 
     def __init__(self):
         self.load()
@@ -50,10 +52,16 @@ class MemeService:
     def load(self):
         with open(self.StoredMemesUrl) as json_file:
             self.Data = json.load(json_file)
-            return self.Data
+            for meme in self.Data['memes']:
+                self.Memes.append(jsonpickle.decode(meme))
+            return self.Memes
 
     def validate(self, memerequest: MemeRequest):
-        for template in self.Data['memes']:
+        for template in self.Memes['memes']:
             if template['id'] == str(memerequest.id):
                 return True
         return False
+
+    @classmethod
+    def getMemes(self):
+        return self.Memes
