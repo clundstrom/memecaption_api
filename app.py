@@ -12,6 +12,10 @@ from models.MemeRequest import MemeRequest
 from services.MemeService import MemeService
 from models.TextBox import TextBox
 
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+
 dogfact = ['Did you know a dog\'s nose print is unique, much like person\'s fingerprint?',
            '45% of U.S dogs sleep in their owner\'s bed.',
            'All dogs dream, but puppies and senior dogs dream more frequently than adult dogs.',
@@ -25,42 +29,34 @@ dogfact = ['Did you know a dog\'s nose print is unique, much like person\'s fing
            'UFAW states that on average around 30% of Dalmatians are deaf in one ear and 5% are deaf in both. This is due to something called the extreme piebald gene which is responsible for their white coat and blue eyes (in some of them). Dalmatians with larger dark patches are less likely to be deaf.',
            'Many owners haven’t heard of this interesting dog fact, but did you know that your four-legged friend has three eyelids? According to iHeartDogs, the third lid is called the \'haw\' or nictitating membrane, and it’s responsible for keeping the eye protected and lubricated.']
 
+# load credentials to memory
 with open('credentials.json') as json_file:
     creds = json.load(json_file)
 
+# api_online = {'api_online': 1, 'time_stamp': time.time()}
+# res = requests.post('http://localhost:5000/tests/endpoint', json=api_online)
 
 MEME_CACHE = []
 
 app = Flask(__name__)
-
-
-def setDBURL(user, pw, url, db):
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=user, pw=pw,
-                                                                                                  url=url, db=db)
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # silence the deprecation warning
-
-
 app.config['UPLOAD_FOLDER'] = 'static'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
-# Set up database
-setDBURL(creds['user'], creds['password'], creds['url'], creds['database'])
-db = SQLAlchemy(app)
 
-
-class Post(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    title = db.Column(db.String(80), unique=True)
-    post_text = db.Column(db.String(255))
-
-    def __init__(self, title, post_text):
-        self.title = title
-        self.post_text = post_text
+# frank_ref.update({
+#     u'age': 13,
+#     u'favorites.color': u'Red'
+# })
 
 
 @app.route('/')
 def hello_world():
     return '<b>Hello World!</b>'
+
+
+@app.route('/status')
+def status():
+    return {'api_online': 'true'}
 
 
 @app.route('/uploader', methods=['GET', 'POST'])
@@ -146,6 +142,16 @@ def reroute():
 def randomize():
     return jsonify(dogfact[randint(0, len(dogfact) - 1)])
 
+
+def setDBURL(user, pw, url, db):
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=user, pw=pw,
+                                                                                                  url=url, db=db)
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # silence the deprecation warning
+
+
+# Set up database
+setDBURL(creds['user'], creds['password'], creds['url'], creds['database'])
+db = SQLAlchemy(app)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

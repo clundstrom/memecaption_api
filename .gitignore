@@ -3,3 +3,4 @@ credentials.json
 /static
 /venv
 /__pycache__/
+serviceAccountKey.json
