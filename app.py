@@ -7,46 +7,28 @@ from flask import Flask, request, jsonify, abort, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 from random import randint
 from werkzeug.utils import secure_filename
-
 from models.MemeRequest import MemeRequest
 from services.MemeService import MemeService
 from models.TextBox import TextBox
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
-import firebase_admin
-from firebase_admin import credentials, firestore
-
-
-dogfact = ['Did you know a dog\'s nose print is unique, much like person\'s fingerprint?',
-           '45% of U.S dogs sleep in their owner\'s bed.',
-           'All dogs dream, but puppies and senior dogs dream more frequently than adult dogs.',
-           'Seventy percent of people sign their dog\'s name on their holiday cards.',
-           'A dog\'s sense of smell is legendary, but did you know that his nose has as many as 300 million receptors? In comparison, a human nose has about 5 million.',
-           'The shape of a dog’s face suggests its longevity: A long face means a longer life.',
-           'Dogs noses are wet to help absorb scent chemicals',
-           'Did you know that three dogs survived the sinking of the Titanic? Vetstreet states that the dogs were in first class and included a Pomeranian puppy - which her owner wrapped in a blanket to escape with, and everyone thought she was carrying a baby. Another Pomeranian and a Pekingese were also rescued. Move over Rose and Jack!',
-           'A Greyhound would actually beat a Cheetah in a long distance race! According to Psychology Today, Greyhounds are excellent long distance runners and can keep a speed of 35mph for up to 7 miles. Where the Cheetah is incredibly fast it can only keep its speed for around 200 - 300 yards, so they may have the running start but it would soon be surpassed by a Greyhound!',
-           'If you thought all dogs barked, then prepare yourself for this dog fact. The Basenji dog doesn’t tend to bark, instead they are known to yodel, whine or scream.',
-           'UFAW states that on average around 30% of Dalmatians are deaf in one ear and 5% are deaf in both. This is due to something called the extreme piebald gene which is responsible for their white coat and blue eyes (in some of them). Dalmatians with larger dark patches are less likely to be deaf.',
-           'Many owners haven’t heard of this interesting dog fact, but did you know that your four-legged friend has three eyelids? According to iHeartDogs, the third lid is called the \'haw\' or nictitating membrane, and it’s responsible for keeping the eye protected and lubricated.']
 
 # load credentials to memory
 with open('credentials.json') as json_file:
     creds = json.load(json_file)
 
-# api_online = {'api_online': 1, 'time_stamp': time.time()}
-# res = requests.post('http://localhost:5000/tests/endpoint', json=api_online)
-
 MEME_CACHE = []
+DOGFACT_CACHE = []
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static'
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
-
-
-# frank_ref.update({
-#     u'age': 13,
-#     u'favorites.color': u'Red'
-# })
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["50 per day", "10 per hour"]
+)
 
 
 @app.route('/')
@@ -74,6 +56,7 @@ def uploader():
 
 
 @app.route('/templates', methods=['GET'])
+@limiter.limit("10/hour")
 def templates():
     if len(MEME_CACHE) == 0:
         MEME_CACHE.append(MemeService().getMemes())
@@ -126,6 +109,7 @@ def generateMeme():
 
 
 @app.route('/routedb', methods=['POST', 'GET'])
+@limiter.limit("2/day")
 def reroute():
     if request.method == 'POST':
         if request.args.get('token') == creds.token:
@@ -140,7 +124,14 @@ def reroute():
 
 @app.route('/dogfact')
 def randomize():
-    return jsonify(dogfact[randint(0, len(dogfact) - 1)])
+    if len(DOGFACT_CACHE) == 0:
+        with open('templates/db.json') as json_file:
+            data = json.load(json_file)
+            for fact in data['dogfacts']:
+                DOGFACT_CACHE.append(fact)
+        return DOGFACT_CACHE[randint(0, len(DOGFACT_CACHE) - 1)]
+    else:
+        return DOGFACT_CACHE[randint(0, len(DOGFACT_CACHE) - 1)]
 
 
 def setDBURL(user, pw, url, db):
