@@ -67,7 +67,7 @@ def templates():
 
 @app.route('/upload', methods=['GET'])
 def upload_file():
-    if request.args.get('pass') == creds['password']:
+    if request.args.get('pass') == creds['token']:
         return render_template('upload.html')
     else:
         return abort(403)
