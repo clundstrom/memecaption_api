@@ -51,8 +51,7 @@ def uploader():
 
         # todo: createTemplate and add to db
 
-        return redirect(
-            f"http://localhost:5000/homebrew?id={request.form.get('id')}&upper={request.form.get('upper')}&lower={request.form.get('lower')}")
+        return redirect(f"http://localhost:5000/homebrew?id={request.form.get('id')}&upper={request.form.get('upper')}&lower={request.form.get('lower')}")
 
 
 @app.route('/templates', methods=['GET'])
