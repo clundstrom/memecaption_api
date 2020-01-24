@@ -39,7 +39,7 @@ def updateStatus():
 
 
 def create_app():
-    scheduler.add_job(updateStatus(), 'interval', minutes=30, id='updateStatus')
+    scheduler.add_job(updateStatus, 'interval', minutes=30, id='updateStatus')
     scheduler.start()
     tmp_app = Flask(__name__)
     tmp_app.config['UPLOAD_FOLDER'] = 'static'
