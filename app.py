@@ -25,7 +25,7 @@ MEME_CACHE = []
 DOGFACT_CACHE = []
 
 
-@cron(30, -1, -1, -1, -1)  # update every 30 mins
+@timer(1800)  # update every 30 mins
 def updateStatus(signum):  # cron jobs need an argument
     cred = credentials.Certificate("serviceAccountKey.json")
     firebase_admin.initialize_app(cred)
