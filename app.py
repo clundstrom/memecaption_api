@@ -13,6 +13,9 @@ from services.MemeService import MemeService
 from models.TextBox import TextBox
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import firebase_admin
+from firebase_admin import credentials, firestore
+from uwsgidecorators import *
 
 # load credentials to memory
 with open('credentials.json') as json_file:
@@ -21,6 +24,17 @@ with open('credentials.json') as json_file:
 MEME_CACHE = []
 DOGFACT_CACHE = []
 
+
+@cron(30, -1, -1, -1, -1)  # update every 30 mins
+def updateStatus():
+    cred = credentials.Certificate("serviceAccountKey.json")
+    firebase_admin.initialize_app(cred)
+    fb = firestore.client()
+    ref = fb.collection(u'api').document(u'j087hhlFv3IHzcz89OAZ')
+    ref.update({
+        u'api_online': 1,
+        u'last_online': firestore.SERVER_TIMESTAMP
+    })
 
 
 def create_app():
