@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import json
 import os
@@ -12,7 +12,6 @@ from services.MemeService import MemeService
 from models.TextBox import TextBox
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-
 
 # load credentials to memory
 with open('credentials.json') as json_file:
