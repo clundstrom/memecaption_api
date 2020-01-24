@@ -25,8 +25,8 @@ MEME_CACHE = []
 DOGFACT_CACHE = []
 
 
-@cron(1, -1, -1, -1, -1)  # update every 30 mins
-def updateStatus():
+@cron(30, -1, -1, -1, -1)  # update every 30 mins
+def updateStatus(signum):  # cron jobs need an argument
     cred = credentials.Certificate("serviceAccountKey.json")
     firebase_admin.initialize_app(cred)
     fb = firestore.client()
@@ -168,6 +168,5 @@ setDBURL(creds['user'], creds['password'], creds['url'], creds['database'])
 db = SQLAlchemy(app)
 
 if __name__ == '__main__':
-    updateStatus()
     app = create_app()
     app.run(debug=False, host='0.0.0.0')
