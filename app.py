@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 import json
 import os
+from datetime import datetime
 
-from flask import Flask, request, jsonify, abort, render_template, redirect
+from flask import Flask, request, abort, render_template, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from random import randint
 from werkzeug.utils import secure_filename
@@ -11,6 +12,8 @@ from models.MemeRequest import MemeRequest
 from services.MemeService import MemeService
 from models.TextBox import TextBox
 from flask_limiter import Limiter
+import firebase_admin
+from firebase_admin import credentials, firestore
 from flask_limiter.util import get_remote_address
 
 # load credentials to memory
@@ -20,9 +23,27 @@ with open('credentials.json') as json_file:
 MEME_CACHE = []
 DOGFACT_CACHE = []
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static'
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+
+def updateStatus():
+    cred = credentials.Certificate("serviceAccountKey.json")
+    firebase_admin.initialize_app(cred)
+    fb = firestore.client()
+    ref = fb.collection(u'api').document(u'j087hhlFv3IHzcz89OAZ')
+    ref.update({
+        u'api_online': 1,
+        u'last_online': firestore.SERVER_TIMESTAMP
+    })
+
+
+def create_app():
+    tmp_app = Flask(__name__)
+    tmp_app.config['UPLOAD_FOLDER'] = 'static'
+    tmp_app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+    updateStatus()
+    return tmp_app
+
+
+app = create_app()
 limiter = Limiter(
     app,
     key_func=get_remote_address,
@@ -32,12 +53,14 @@ limiter = Limiter(
 
 @app.route('/')
 def hello_world():
-    return '<b>Hello World!</b>'
+    return {'api_online': 'true',
+            'last_online': datetime.now()}
 
 
 @app.route('/status')
 def status():
-    return {'api_online': 'true'}
+    return {'api_online': 'true',
+            'last_online': datetime.now()}
 
 
 @app.route('/uploader', methods=['GET', 'POST'])
@@ -50,7 +73,8 @@ def uploader():
 
         # todo: createTemplate and add to db
 
-        return redirect(f"http://localhost:5000/homebrew?id={request.form.get('id')}&upper={request.form.get('upper')}&lower={request.form.get('lower')}")
+        return redirect(
+            f"http://localhost:5000/homebrew?id={request.form.get('id')}&upper={request.form.get('upper')}&lower={request.form.get('lower')}")
 
 
 @app.route('/templates', methods=['GET'])
@@ -143,4 +167,5 @@ setDBURL(creds['user'], creds['password'], creds['url'], creds['database'])
 db = SQLAlchemy(app)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    updateStatus()
+    app.run(debug=False, host='0.0.0.0')

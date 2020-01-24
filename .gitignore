@@ -6,3 +6,4 @@ credentials.json
 serviceAccountKey.json
 *.pyc
 *.pyo
+/venv/
