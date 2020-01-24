@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+import atexit
 import json
 import os
 from datetime import datetime
@@ -15,6 +16,7 @@ from flask_limiter import Limiter
 import firebase_admin
 from firebase_admin import credentials, firestore
 from flask_limiter.util import get_remote_address
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # load credentials to memory
 with open('credentials.json') as json_file:
@@ -22,6 +24,7 @@ with open('credentials.json') as json_file:
 
 MEME_CACHE = []
 DOGFACT_CACHE = []
+scheduler = BackgroundScheduler()
 
 
 def updateStatus():
@@ -36,10 +39,13 @@ def updateStatus():
 
 
 def create_app():
+    scheduler.add_job(updateStatus(), 'interval', minutes=30, id='updateStatus')
+    scheduler.start()
     tmp_app = Flask(__name__)
     tmp_app.config['UPLOAD_FOLDER'] = 'static'
     tmp_app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
-    updateStatus()
+    # Shut down the scheduler when exiting the app
+    atexit.register(lambda: scheduler.shutdown())
     return tmp_app
 
 
