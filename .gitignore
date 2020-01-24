@@ -1,6 +1,8 @@
 credentials.json
 /.idea/
 /static
-/venv
+/venv3.7
 /__pycache__/
 serviceAccountKey.json
+*.pyc
+*.pyo
