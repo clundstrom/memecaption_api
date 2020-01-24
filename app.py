@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import atexit
 import json
 import os
 from datetime import datetime
 
-from flask import Flask, request, abort, render_template, redirect, jsonify
+from flask import Flask, request, abort, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 from random import randint
 from werkzeug.utils import secure_filename
@@ -13,10 +12,7 @@ from models.MemeRequest import MemeRequest
 from services.MemeService import MemeService
 from models.TextBox import TextBox
 from flask_limiter import Limiter
-import firebase_admin
-from firebase_admin import credentials, firestore
 from flask_limiter.util import get_remote_address
-from apscheduler.schedulers.background import BackgroundScheduler
 
 # load credentials to memory
 with open('credentials.json') as json_file:
@@ -24,28 +20,13 @@ with open('credentials.json') as json_file:
 
 MEME_CACHE = []
 DOGFACT_CACHE = []
-scheduler = BackgroundScheduler()
 
-
-def updateStatus():
-    cred = credentials.Certificate("serviceAccountKey.json")
-    firebase_admin.initialize_app(cred)
-    fb = firestore.client()
-    ref = fb.collection(u'api').document(u'j087hhlFv3IHzcz89OAZ')
-    ref.update({
-        u'api_online': 1,
-        u'last_online': firestore.SERVER_TIMESTAMP
-    })
 
 
 def create_app():
-    scheduler.add_job(updateStatus, 'interval', minutes=30, id='updateStatus')
-    scheduler.start()
     tmp_app = Flask(__name__)
     tmp_app.config['UPLOAD_FOLDER'] = 'static'
     tmp_app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
-    # Shut down the scheduler when exiting the app
-    atexit.register(lambda: scheduler.shutdown())
     return tmp_app
 
 
