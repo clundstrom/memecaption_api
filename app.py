@@ -31,6 +31,7 @@ fb = firestore.client()
 
 @timer(1800)  # update every 30 mins
 def updateStatus(signum):  # cron jobs need an argument
+    print("Status updated.")
     ref = fb.collection(u'api').document(u'j087hhlFv3IHzcz89OAZ')
     ref.update({
         u'api_online': 1,
