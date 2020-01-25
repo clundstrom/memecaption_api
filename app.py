@@ -24,12 +24,13 @@ with open('credentials.json') as json_file:
 MEME_CACHE = []
 DOGFACT_CACHE = []
 
+cred = credentials.Certificate("serviceAccountKey.json")
+firebase_admin.initialize_app(cred)
+fb = firestore.client()
+
 
 @timer(1800)  # update every 30 mins
 def updateStatus(signum):  # cron jobs need an argument
-    cred = credentials.Certificate("serviceAccountKey.json")
-    firebase_admin.initialize_app(cred)
-    fb = firestore.client()
     ref = fb.collection(u'api').document(u'j087hhlFv3IHzcz89OAZ')
     ref.update({
         u'api_online': 1,
