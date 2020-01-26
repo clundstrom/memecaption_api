@@ -1,5 +1,6 @@
 import json
 
+import jsonpickle
 from flask import send_file
 
 from models.MemeRequest import MemeRequest
@@ -8,10 +9,17 @@ from services.MemeGenerator import MemeGenerator
 
 
 class MemeService:
-    # list of stored templates
-    StoredMemesUrl = 'templates/db.json'
+    """
+    Handles processing of MemeRequests.
+    Also handles Saving and Loading of Meme Templates.
 
-    data = {'memes': []}
+    """
+
+    # List of stored templates
+    StoredMemesUrl = 'templates/db.json'
+    # Loaded memes
+    Data = {}
+    Memes = []
 
     def __init__(self):
         self.load()
@@ -24,7 +32,7 @@ class MemeService:
             print(box)
 
         try:
-            url = MemeGenerator().generate(f'templates/{memereq.id}.jpg', memereq.boxes, 46)
+            url = MemeGenerator().generate(f'static/{memereq.id}.jpg', memereq.boxes)
         except InterruptedError:
             return 'Your text was too long. Max length=69 characters'
 
@@ -32,22 +40,28 @@ class MemeService:
 
     def uploadTemplate(self, template: MemeTemplate):
 
-        # check if file exist
-        # fetch new id number
-
+        # todo: check if file exist
+        # todo: fetch new id number
         pass
 
-    def save(self, object):
+    @staticmethod
+    def save(obj):
         with open('templates/db.json', 'w') as outfile:
-            json.dump(object, outfile, indent=4, sort_keys=True)
+            json.dump(obj, outfile, indent=4, sort_keys=True)
 
     def load(self):
         with open(self.StoredMemesUrl) as json_file:
-            self.data = json.load(json_file)
-            print(self.data)
+            self.Data = json.load(json_file)
+            for meme in self.Data['memes']:
+                self.Memes.append(jsonpickle.decode(meme))
+            return self.Memes
 
     def validate(self, memerequest: MemeRequest):
-        for template in self.data['memes']:
-            if template['id'] == str(memerequest.id):
+        for template in self.Memes:
+            if template.id == int(memerequest.id):
                 return True
         return False
+
+    @classmethod
+    def getMemes(self):
+        return self.Memes
