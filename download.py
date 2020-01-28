@@ -1,9 +1,14 @@
 import json
 import jsonpickle
 import requests
-
 from models.MemeTemplate import MemeTemplate
 from services.MemeService import MemeService
+
+
+"""
+Script used to download meme templates from a specified source.
+
+"""
 
 db = MemeService().load()
 

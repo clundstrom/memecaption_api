@@ -11,9 +11,7 @@ class MemeTemplate:
     :param name = Name of meme.
     :param url = Path to file.
     :param name = Name of meme.
-    :param name = Name of meme.
     
-
     """
 
     def __init__(self, name: '', url: '', id, fontsize=46):

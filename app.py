@@ -17,13 +17,14 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from uwsgidecorators import *
 
-# load credentials to memory
+# load credentials
 with open('credentials.json') as json_file:
     creds = json.load(json_file)
 
 MEME_CACHE = []
 DOGFACT_CACHE = []
 
+# load firebase cred
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 fb = firestore.client()
@@ -55,7 +56,7 @@ limiter = Limiter(
 
 
 @app.route('/')
-def hello_world():
+def entrypoint():
     return {'api_online': 'true',
             'last_online': datetime.now()}
 
@@ -156,7 +157,7 @@ def randomize():
                 DOGFACT_CACHE.append(fact)
         return DOGFACT_CACHE[randint(0, len(DOGFACT_CACHE) - 1)]
     else:
-        return DOGFACT_CACHE[randint(0, len(DOGFACT_CACHE) - 1)]
+        return DOGFACT_CACHE[randint(0, len(DOGFACT_CACHE) - 1)]  # return cached facts
 
 
 def setDBURL(user, pw, url, db):

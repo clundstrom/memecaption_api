@@ -16,7 +16,7 @@ class MemeRequest:
         self.boxes = []
         self.x_offset = x_offset
         self.y_offset = y_offset
-        if id is None or text is None:
+        if self.id is None or text is None:
             raise NotImplementedError
 
     def getText(self):

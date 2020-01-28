@@ -4,20 +4,17 @@ import jsonpickle
 from flask import send_file
 
 from models.MemeRequest import MemeRequest
-from models.MemeTemplate import MemeTemplate
 from services.MemeGenerator import MemeGenerator
 
 
 class MemeService:
     """
     Handles processing of MemeRequests.
-    Also handles Saving and Loading of Meme Templates.
-
     """
 
     # List of stored templates
     StoredMemesUrl = 'templates/db.json'
-    # Loaded memes
+    # Cached
     Data = {}
     Memes = []
 
@@ -37,12 +34,6 @@ class MemeService:
             return 'Your text was too long. Max length=69 characters'
 
         return send_file(url, mimetype='image/png')
-
-    def uploadTemplate(self, template: MemeTemplate):
-
-        # todo: check if file exist
-        # todo: fetch new id number
-        pass
 
     @staticmethod
     def save(obj):
