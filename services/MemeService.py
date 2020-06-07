@@ -41,11 +41,12 @@ class MemeService:
             json.dump(obj, outfile, indent=4, sort_keys=True)
 
     def load(self):
-        with open(self.StoredMemesUrl) as json_file:
-            self.Data = json.load(json_file)
-            for meme in self.Data['memes']:
-                self.Memes.append(jsonpickle.decode(meme))
-            return self.Memes
+        if len(self.Memes) == 0:
+            with open(self.StoredMemesUrl) as json_file:
+                self.Data = json.load(json_file)
+                for meme in self.Data['memes']:
+                    self.Memes.append(jsonpickle.decode(meme))
+                return self.Memes
 
     def validate(self, memerequest: MemeRequest):
         for template in self.Memes:
