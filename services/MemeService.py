@@ -1,8 +1,6 @@
 import json
-
 import jsonpickle
 from flask import send_file
-
 from models.MemeRequest import MemeRequest
 from services.MemeGenerator import MemeGenerator
 

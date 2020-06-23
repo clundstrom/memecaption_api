@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  api:
+    container_name: api
+    build: venv
+    ports:
+      - 4200:8080
+    working_dir: /api
+    command: bash -c "uwsgi --ini config.ini"
+
+  frontend:
+    container_name: frontend
+    build: ./Frontend/
+    working_dir: /Frontend
+    #command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    ports:
+    - 80:80
+    - 443:81
+  
+  #certbot:
+   # image: certbot/certbot
+    #entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'" # check for renewal every 12 hours

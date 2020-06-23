@@ -3,9 +3,7 @@
 import json
 import os
 from datetime import datetime
-
 from flask import Flask, request, abort, render_template, redirect
-from flask_sqlalchemy import SQLAlchemy
 from random import randint
 from werkzeug.utils import secure_filename
 from models.MemeRequest import MemeRequest
@@ -98,7 +96,6 @@ def upload_file():
     else:
         return abort(403)
 
-
 @app.route('/homebrew', methods=['GET'])
 def generateMeme():
     try:
@@ -168,7 +165,6 @@ def setDBURL(user, pw, url, db):
 
 # Set up database
 setDBURL(creds['user'], creds['password'], creds['url'], creds['database'])
-db = SQLAlchemy(app)
 
 if __name__ == '__main__':
     app = create_app()

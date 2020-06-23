@@ -1,22 +1,17 @@
 FROM ubuntu:18.04
 
-MAINTAINER Chris Lundstrom "contact@clundstrom.com"
-
 RUN apt-get update -y && \
-    apt-get install -y python-pip python-dev
+    apt-get install -y python3-pip python3-dev python3-venv
 
+# Copy req file
+COPY req.txt /
 
-WORKDIR /app
+RUN pip3 install -r req.txt
+RUN pip3 install uwsgi
 
-COPY . /app
+RUN useradd -ms /bin/bash uwsgi
+USER uwsgi
 
-# We copy just the requirements.txt first to leverage Docker cache
-COPY ./req.txt /app/req.txt
-RUN pip install -r req.txt
+COPY . /api
+WORKDIR /api
 
-RUN pip install flask
-RUN pip install flask_sqlalchemy
-
-ENTRYPOINT [ "python" ]
-
-CMD [ "app.py" ]
