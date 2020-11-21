@@ -1,30 +1,30 @@
 import hashlib, hmac
 import os
-import json
 import shlex
 from subprocess import Popen, PIPE
 
 
-def validate(data):
+def validate(request):
     try:
-        parsed = json.load(data)
 
-        expectedHash = parsed['X-Hub-Signature'].replace("sha=1", "")
-        calculatedHash = hmac.new(bytes(os.environ.get('WEBHOOK_KEY')), data, hashlib.sha1).hexdigest()
+        expectedHash = request.headers.get('X-Hub-Signature').replace("sha1=", "")
+
+        calculatedHash = hmac.new(os.environ.get('WEBHOOK_KEY','').encode("utf-8"), msg=request.data, digestmod=hashlib.sha1).hexdigest()
 
         isAllowed = hmac.compare_digest(calculatedHash, expectedHash)
-        isMaster = (parsed['ref'] == 'refs/heads/master')
+        isMaster = (request.json['ref'] == 'refs/heads/master')
         cmd = "cd " + os.environ.get('REPO') + " && " + "/deploy.sh"
 
         if isAllowed and isMaster:
             exitcode, out, err = get_exitcode_stdout_stderr(cmd)
             if exitcode == 1:
-                return 400, 'Bad request: ' + str(err)
+                return 'Server error: ' + str(err), 500
             else:
-                return 200, 'OK'
+                return 'OK', 200
+        return f'Bad request: Allowed {isAllowed}, Master: {isMaster}', 400
 
     except Exception as e:
-        return 403, 'Forbidden'
+        return 'Forbidden', 403
 
 
 def get_exitcode_stdout_stderr(cmd):

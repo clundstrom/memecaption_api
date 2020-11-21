@@ -15,7 +15,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import firebase_admin
 from firebase_admin import credentials, firestore
-from uwsgidecorators import *
+#from uwsgidecorators import *
 from services import Auth
 
 # load credentials
@@ -34,7 +34,7 @@ env = Env()
 env.read_env('.env')
 
 
-@timer(1800)  # update every 30 mins
+#@timer(1800)  # update every 30 mins
 def updateStatus(signum):  # cron jobs need an argument
     print("Status updated.")
     ref = fb.collection(u'api').document(u'j087hhlFv3IHzcz89OAZ')
@@ -93,11 +93,11 @@ def templates():
         return render_template('templates.html', results=MEME_CACHE[0])
 
 
-@app.route('/hook', methods=['GET'])
+@app.route('/hook', methods=['POST'])
 def hook():
     if request:
         if request.data:
-            response = Auth.validate(request.data)
+            response = Auth.validate(request)
             return make_response(response)
         else:
             return abort(403)
@@ -182,4 +182,4 @@ setDBURL(creds['user'], creds['password'], creds['url'], creds['database'])
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')

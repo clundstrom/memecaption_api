@@ -2,28 +2,15 @@ version: "3.7"
 
 services:
   api:
-    container_name: api
-    build: venv
+    container_name: api_meme
+    build:
+      context: .
+    env_file: .env
     ports:
       - 4200:8080
-    working_dir: /api
     command: bash -c "uwsgi --ini config.ini"
-    networks: 
-      - mainframe
-
-
-  jenkins:
-    container_name: jenkins
-    image: jenkins/jenkins:lts
-    ports:
-    - 8080:8080
-    - 50000:50000
     networks: 
       - mainframe
 
 networks: 
   mainframe:
-  
-  #certbot:
-   # image: certbot/certbot
-    #entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'" # check for renewal every 12 hours
