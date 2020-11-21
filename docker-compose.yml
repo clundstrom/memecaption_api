@@ -8,15 +8,21 @@ services:
       - 4200:8080
     working_dir: /api
     command: bash -c "uwsgi --ini config.ini"
+    networks: 
+      - mainframe
 
-  frontend:
-    container_name: frontend
-    build: ./Frontend/
-    working_dir: /Frontend
-    #command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
     ports:
-    - 80:80
-    - 443:81
+    - 8080:8080
+    - 50000:50000
+    networks: 
+      - mainframe
+
+networks: 
+  mainframe:
   
   #certbot:
    # image: certbot/certbot

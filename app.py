@@ -3,7 +3,9 @@
 import json
 import os
 from datetime import datetime
-from flask import Flask, request, abort, render_template, redirect
+
+from environs import Env
+from flask import Flask, request, abort, render_template, redirect, make_response
 from random import randint
 from werkzeug.utils import secure_filename
 from models.MemeRequest import MemeRequest
@@ -14,6 +16,7 @@ from flask_limiter.util import get_remote_address
 import firebase_admin
 from firebase_admin import credentials, firestore
 from uwsgidecorators import *
+from services import Auth
 
 # load credentials
 with open('credentials.json') as json_file:
@@ -26,6 +29,9 @@ DOGFACT_CACHE = []
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 fb = firestore.client()
+env = Env()
+
+env.read_env('.env')
 
 
 @timer(1800)  # update every 30 mins
@@ -73,8 +79,6 @@ def uploader():
         f = request.files['file']
         f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
 
-        # todo: createTemplate and add to db
-
         return redirect(
             f"http://localhost:5000/homebrew?id={request.form.get('id')}&upper={request.form.get('upper')}&lower={request.form.get('lower')}")
 
@@ -87,6 +91,16 @@ def templates():
         return render_template('templates.html', results=MEME_CACHE[0])
     else:
         return render_template('templates.html', results=MEME_CACHE[0])
+
+
+@app.route('/hook', methods=['GET'])
+def hook():
+    if request:
+        if request.data:
+            response = Auth.validate(request.data)
+            return make_response(response)
+        else:
+            return abort(403)
 
 
 @app.route('/upload', methods=['GET'])
