@@ -2,7 +2,7 @@ from flask import Flask
 from environs import Env
 import firebase_admin
 from firebase_admin import credentials, firestore
-#from uwsgidecorators import *
+from uwsgidecorators import *
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -14,7 +14,8 @@ fb = firestore.client()
 
 limiter = 0
 
-#@timer(1800)
+
+@timer(1800)
 def updateStatus(signum):
     """
     Updates firebase once every 30 minutes.
