@@ -5,7 +5,7 @@ from firebase_admin import credentials, firestore
 from uwsgidecorators import *
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-
+import os
 
 # Load firebase credentials
 cred = credentials.Certificate("serviceAccountKey.json")
@@ -35,8 +35,8 @@ def create_api():
     :return: app
     """
 
-    app = Flask(__name__)
-    app.config['UPLOAD_FOLDER'] = 'static'
+    app = Flask(__name__, root_path=os.path.abspath('.'), static_folder=os.path.abspath('.') + '\\static')
+    app.config['UPLOAD_FOLDER'] = '../static'
     app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
     global limiter

@@ -13,18 +13,11 @@ from api_setup import limiter
 MEME_CACHE = []
 DOGFACT_CACHE = []
 
-
 open_routes = Blueprint('open_routes', __name__)
 
 
 @open_routes.route('/')
 def entrypoint():
-    return {'api_online': 'true',
-            'last_online': datetime.now()}
-
-
-@open_routes.route('/status')
-def status():
     return {'api_online': 'true',
             'last_online': datetime.now()}
 
@@ -48,6 +41,10 @@ def hook():
         else:
             return abort(403)
 
+
+@open_routes.route('/cipher', methods=['GET'])
+def caesar_cipher(ciphertext):
+    pass
 
 @open_routes.route('/homebrew', methods=['GET'])
 def generateMeme():
