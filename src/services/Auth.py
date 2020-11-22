@@ -19,7 +19,7 @@ def validate(request):
             if exitcode == 1:
                 return 'Server error: ' + str(err), 500
             else:
-                res = {"OK": out, "exitcode": exitcode, "error": err}
+                res = {"OK": str(out), "exitcode": str(exitcode), "error": str(err)}
                 return res, 200
         return f'Bad request: Allowed {is_allowed}, Master: {is_master}', 400
 
