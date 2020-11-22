@@ -22,7 +22,7 @@ def validate(request):
         is_master = (request.json['ref'] == 'refs/heads/master')
 
         if is_allowed and is_master:
-            exitcode, out, err = get_exitcode_stdout_stderr("bash " + str(os.environ.get('REPO')))
+            exitcode, out, err = get_exitcode_stdout_stderr("bash " + os.environ.get('REPO'))
             if exitcode == 1:
                 return 'Server error: ' + str(err), 500
             else:
@@ -40,7 +40,7 @@ def get_exitcode_stdout_stderr(cmd):
     """
     args = shlex.split(cmd)
 
-    proc = Popen(args, stdout=PIPE, stderr=PIPE)
+    proc = Popen(args, stdout=PIPE, env=os.environ, stderr=PIPE)
     out, err = proc.communicate()
     exitcode = proc.returncode
 
