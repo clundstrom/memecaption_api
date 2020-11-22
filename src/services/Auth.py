@@ -13,7 +13,7 @@ def validate(request):
 
         isAllowed = hmac.compare_digest(calculatedHash, expectedHash)
         isMaster = (request.json['ref'] == 'refs/heads/master')
-        cmd = "cd " + os.environ.get('REPO') + " && " + "/deploy.sh"
+        cmd = "cd " + os.environ.get('REPO') + " && " + "./deploy.sh"
 
         if isAllowed and isMaster:
             exitcode, out, err = get_exitcode_stdout_stderr(cmd)
