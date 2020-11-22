@@ -29,9 +29,9 @@ def entrypoint():
 def templates():
     if len(MEME_CACHE) == 0:
         MEME_CACHE.append(MemeService().getMemes())
-        return render_template('templates.html', results=MEME_CACHE[0])
+        return render_template('templates.html', results=MEME_CACHE[0], timeout=0.5)
     else:
-        return render_template('templates.html', results=MEME_CACHE[0])
+        return render_template('templates.html', results=MEME_CACHE[0], timeout=0.5)
 
 
 @open_routes.route('/hook', methods=['POST'])
