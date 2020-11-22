@@ -22,7 +22,7 @@ def validate(request):
         is_master = (request.json['ref'] == 'refs/heads/master')
 
         if is_allowed and is_master:
-            exitcode, out, err = get_exitcode_stdout_stderr("bash " + os.environ.get('REPO'))
+            exitcode, out, err = get_exitcode_stdout_stderr("bash " + str(os.environ.get('REPO')))
             if exitcode == 1:
                 return 'Server error: ' + str(err), 500
             else:
