@@ -1,13 +1,15 @@
 from flask import Blueprint
-from services import Auth
+from src.services import Auth
 import json
 from datetime import datetime
 from flask import request, abort, render_template, make_response
 from random import randint
-from models.MemeRequest import MemeRequest
-from services.MemeService import MemeService
-from models.TextBox import TextBox
+from src.modules.Memes.MemeRequest import MemeRequest
+from src.services.MemeService import MemeService
+from src.modules.Memes.TextBox import TextBox
 from api_setup import limiter
+from src.modules.Cipher import crypto
+import re
 
 # Caches
 MEME_CACHE = []
@@ -43,8 +45,22 @@ def hook():
 
 
 @open_routes.route('/cipher', methods=['GET'])
-def caesar_cipher(ciphertext):
-    pass
+def caesar_cipher():
+    try:
+        if request.args:
+            ciphertext: str = request.args.get('text')
+            sanitized = re.sub(r"[^A-za-z]+", "", ciphertext)
+            keys = crypto.chi_key_search(sanitized)
+            result = min(keys, key=lambda t: t[1])
+
+            res = {"shift_key": result[0], "chi": result[1], "decipher": result[2]}
+            return make_response(res, 200)
+        else:
+            return abort(400)
+
+    except Exception as e:
+        return abort(400)
+
 
 @open_routes.route('/homebrew', methods=['GET'])
 def generateMeme():

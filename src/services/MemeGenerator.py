@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 from typing import List
-from models.TextBox import TextBox
+from src.modules.Memes.TextBox import TextBox
 import textwrap
 
 
