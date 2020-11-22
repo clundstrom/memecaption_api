@@ -1,9 +1,16 @@
 import hashlib, hmac
 import os
+import shlex
 from subprocess import Popen, PIPE
 
 
 def validate(request):
+    """
+    Validates webhook request by comparing hashes of the request data
+    with a hmac key. Triggers a deploy script on the backend.
+    :param request:
+    :return:
+    """
     try:
 
         expected_hash = request.headers.get('X-Hub-Signature').replace("sha1=", "")
@@ -15,7 +22,7 @@ def validate(request):
         is_master = (request.json['ref'] == 'refs/heads/master')
 
         if is_allowed and is_master:
-            exitcode, out, err = get_exitcode_stdout_stderr(os.environ.get('REPO'))
+            exitcode, out, err = get_exitcode_stdout_stderr("bash " + os.environ.get('REPO'))
             if exitcode == 1:
                 return 'Server error: ' + str(err), 500
             else:
@@ -27,11 +34,13 @@ def validate(request):
         return 'Forbidden', 403
 
 
-def get_exitcode_stdout_stderr(script_path):
+def get_exitcode_stdout_stderr(cmd):
     """
     Execute the external command and get its exitcode, stdout and stderr.
     """
-    proc = Popen(script_path, stdout=PIPE, stderr=PIPE, shell=True)
+    args = shlex.split(cmd)
+
+    proc = Popen(args, stdout=PIPE, stderr=PIPE)
     out, err = proc.communicate()
     exitcode = proc.returncode
 
