@@ -1,6 +1,5 @@
 import hashlib, hmac
 import os
-import shlex
 from subprocess import Popen, PIPE
 
 
@@ -13,10 +12,9 @@ def validate(request):
 
         isAllowed = hmac.compare_digest(calculatedHash, expectedHash)
         isMaster = (request.json['ref'] == 'refs/heads/master')
-        cmd = "cd " + os.environ.get('REPO') + " && " + "./deploy.sh"
 
         if isAllowed and isMaster:
-            exitcode, out, err = get_exitcode_stdout_stderr(cmd)
+            exitcode, out, err = get_exitcode_stdout_stderr(os.environ.get('REPO'))
             if exitcode == 1:
                 return 'Server error: ' + str(err), 500
             else:
@@ -31,10 +29,8 @@ def get_exitcode_stdout_stderr(cmd):
     """
     Execute the external command and get its exitcode, stdout and stderr.
     """
-    args = shlex.split(cmd)
-
-    proc = Popen(args, stdout=PIPE, stderr=PIPE, shell=True)
+    proc = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
     out, err = proc.communicate()
     exitcode = proc.returncode
-    #
+
     return exitcode, out, err
