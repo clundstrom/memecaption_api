@@ -35,7 +35,7 @@ def create_api():
     :return: app
     """
 
-    app = Flask(__name__, root_path=os.path.abspath('.'), static_folder=os.path.abspath('.') + '\\static')
+    app = Flask(__name__, root_path=os.path.abspath('.'))
     app.config['UPLOAD_FOLDER'] = '../static'
     app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
