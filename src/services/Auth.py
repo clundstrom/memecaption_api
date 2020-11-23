@@ -22,7 +22,6 @@ def validate(request):
 
         if is_allowed and is_master:
             repo = git.Repo(os.environ.get('REPO'))
-            [remote.fetch() for remote in repo.remotes]
             repo.git.reset('--hard', 'origin/master')
             repo.git.pull('origin', 'master')
 
