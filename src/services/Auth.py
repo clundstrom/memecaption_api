@@ -1,6 +1,6 @@
 import hashlib, hmac
 import os
-import subprocess
+import git
 
 
 def validate(request):
@@ -21,23 +21,14 @@ def validate(request):
         is_master = (request.json['ref'] == 'refs/heads/master')
 
         if is_allowed and is_master:
-            exitcode, out, err = get_exitcode_stdout_stderr(os.environ.get('REPO'))
-            if exitcode == 1:
-                return 'Server error: ' + str(err), 500
-            else:
-                res = {"OK": str(out), "exitcode": str(exitcode), "error": str(err)}
-                return res, 200
-        return f'Bad request: Allowed {is_allowed}, Master: {is_master}', 400
+            repo = git.Repo(os.environ.get('REPO'))
+            [remote.fetch() for remote in repo.remotes]
+            repo.git.reset('--hard', 'origin/master')
+            repo.git.pull('origin', 'master')
+
+            return "OK", 200
+
+        return f'Bad request: Allowed: {is_allowed}, Master: {is_master}', 400
 
     except Exception as e:
         return 'Forbidden', 403
-
-
-def get_exitcode_stdout_stderr(cmd):
-    """
-    Execute the external command and get its exitcode, stdout and stderr.
-    """
-
-    proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    return proc.returncode, proc.stdout, proc.stderr
