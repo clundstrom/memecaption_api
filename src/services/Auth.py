@@ -1,6 +1,5 @@
 import hashlib, hmac
 import os
-import git
 
 
 def validate(request):
@@ -21,10 +20,7 @@ def validate(request):
         is_master = (request.json['ref'] == 'refs/heads/master')
 
         if is_allowed and is_master:
-            repo = git.Repo(os.environ.get('REPO'))
-            repo.git.reset('--hard', 'origin/master')
-            repo.git.pull('origin', 'master')
-
+            os.system('sh /home/pi/server/PortfolioAng/deploy.sh')
             return "OK", 200
 
         return f'Bad request: Allowed: {is_allowed}, Master: {is_master}', 400
