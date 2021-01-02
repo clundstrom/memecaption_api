@@ -20,7 +20,7 @@ def validate(request):
         is_master = (request.json['ref'] == 'refs/heads/master')
 
         if is_allowed and is_master:
-            os.system('sh /home/pi/server/PortfolioAng/deploy.sh')
+            os.system('/home/pi/server/PortfolioAng/deploy.sh')
             return "OK", 200
 
         return f'Bad request: Allowed: {is_allowed}, Master: {is_master}', 400
